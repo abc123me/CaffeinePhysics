@@ -28,6 +28,7 @@ public class BoxCollider extends Collider{
 	public boolean pointLiesIn(Body b, float x, float y) {
 		float minX = width / 2 - b.getPositionX(), maxX = width / 2 + b.getPositionX();
 		float minY = height / 2 - b.getPositionY(), maxY = height / 2 + b.getPositionY();
+		System.out.println();
 		return Utility.inRange(x, minX, maxX) && Utility.inRange(y, minY, maxY);
 	}
 	@Override
