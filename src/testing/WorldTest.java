@@ -2,7 +2,6 @@ package testing;
 
 import javax.swing.JFrame;
 
-import net.net16.jeremiahlowe.bettercollections.vector.Vector2;
 import net.net16.jeremiahlowe.caffeinephysics.Body;
 import net.net16.jeremiahlowe.caffeinephysics.World;
 import net.net16.jeremiahlowe.caffeinephysics.collider.BoxCollider;
@@ -15,6 +14,8 @@ public class WorldTest {
 	public static final int HOLDER_HEIGHT = 400;
 	public static void main(String[] args) {
 		World world = new World();
+		WorldPanel worldPanel = new WorldPanel(world);
+		makeRenderer(worldPanel);
 		Body square = new Body(new BoxCollider(2f), 0, 0);
 		Body circle = new Body(new CircleCollider(1f), 0, 3);
 		Body floor = new Body(new BoxCollider(9, 1f), 0, -4f);
@@ -22,11 +23,9 @@ public class WorldTest {
 		world.addBody(circle);
 		world.addBody(floor);
 		world.addBody(square);
-		world.setGravity(0, -1);
+		world.setGravity(0, -9.81f);
 		//System.out.println("RAYCAST TEST:");
 		//System.out.println(world.raycastDetailed(new Vector2(0, 5), new Vector2(0, -1)));
-		WorldPanel worldPanel = new WorldPanel(world);
-		makeRenderer(worldPanel);
 	}
 	private static void makeRenderer(WorldPanel worldPanel){
 		JFrame hld = GraphicsUtil.makeHolderFrame("Holder frame", HOLDER_WIDTH, HOLDER_HEIGHT);
