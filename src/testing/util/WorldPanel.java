@@ -19,7 +19,7 @@ public class WorldPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
 	public Color bodyColor = Color.BLACK;
 	public Color colliderColor = Color.CYAN;
-	public Color boundingBoxColor = Color.ORANGE;
+	public Color boundingBoxColor = new Color(255, 200, 0, 125);
 	public int xSize = 5;
 	private World world = null;
 	private float viewW = 10, viewH = 10;
@@ -54,6 +54,14 @@ public class WorldPanel extends JPanel{
 					case KeyEvent.VK_RIGHT:
 						viewportPosX++;
 						break;
+					case KeyEvent.VK_EQUALS:
+						viewW++;
+						viewH++;
+						break;
+					case KeyEvent.VK_MINUS:
+						viewW--;
+						viewH--;
+						break;
 				}
 			}
 		});
@@ -62,7 +70,7 @@ public class WorldPanel extends JPanel{
 	@Override
 	public void paintComponent(Graphics ug) {
 		if(world == null) return;
-		BufferedImage buffer = new BufferedImage(getWidth(), getHeight(), ColorModel.BITMASK);
+		BufferedImage buffer = new BufferedImage(getWidth(), getHeight(), ColorModel.TRANSLUCENT);
 		Graphics g = buffer.getGraphics();
 		g.setColor(getBackground());
 		g.fillRect(0, 0, getWidth(), getHeight());
@@ -84,7 +92,7 @@ public class WorldPanel extends JPanel{
 		int bx = worldToPixelX(bodyPos.x);
 		int by = worldToPixelY(bodyPos.y);
 		g.setColor(bodyColor);
-		if(Utility.inRange(bx, 0, getWidth()) && Utility.inRange(by, 0, getHeight())){
+		if(Utility.betweenOrEqual(bx, 0, getWidth()) && Utility.betweenOrEqual(by, 0, getHeight())){
 			int xo = Math.round(xSize / 2);
 			g.drawLine(bx - xo, by - xo, bx + xo, by + xo);
 			g.drawLine(bx - xo, by + xo, bx + xo, by - xo);

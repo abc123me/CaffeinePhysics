@@ -5,9 +5,12 @@ import net.net16.jeremiahlowe.caffeinephysics.Body;
 
 public abstract class Collider {
 	public int layer = 0;
+	public boolean ignoresGravity = false;
+	public boolean enabled = true;
 	
 	public abstract Vector2[] getVerticiesNonParented();
-	public abstract Vector2[] getVerticies(Body b);
+	public abstract Vector2[] getVerticiesOffsetted(float x, float y);
+	public Vector2[] getVerticies(Body b){return getVerticiesOffsetted(b.getPositionX(), b.getPositionY());}
 	public final boolean pointLiesIn(Body b, Vector2 p){return pointLiesIn(b, p.x, p.y);}
 	public abstract boolean pointLiesIn(Body b, float x, float y);
 	

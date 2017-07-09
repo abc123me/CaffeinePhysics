@@ -9,13 +9,13 @@ public class Utility {
 	public static final int map(int val, int min, int max, int newMin, int newMax){
 		return (((val - min) * (newMax - newMin)) / (max - min)) + newMin;
 	}
-	public static final boolean inRange(float val, float min, float max){
+	public static final boolean betweenOrEqual(float val, float min, float max){
 		return val >= min && val <= max;
 	}
 	public static final boolean inBounds(Vector2 point, Vector2 pos1, Vector2 pos2){
 		float ax = Math.min(pos1.x, pos2.x), ay = Math.min(pos1.y, pos2.y);
 		float bx = Math.max(pos1.x, pos2.x), by = Math.max(pos1.y, pos2.y);
-		return inRange(point.x, ax, bx) && inRange(point.y, ay, by);
+		return betweenOrEqual(point.x, ax, bx) && betweenOrEqual(point.y, ay, by);
 	}
 	public static final float clamp(float val, float min, float max){
 		if(val > max) return max;
@@ -47,6 +47,6 @@ public class Utility {
 			if(minSlope < 0 && maxSlope > 0) return true;
 			else return false;
 		}
-		return inRange(raySlope, minSlope, maxSlope);
+		return betweenOrEqual(raySlope, minSlope, maxSlope);
 	}
 }

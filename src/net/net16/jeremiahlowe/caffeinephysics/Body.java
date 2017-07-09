@@ -57,7 +57,7 @@ public class Body {
 	}
 	public void setStatic(boolean isStatic){this.isStatic = isStatic;}
 	public boolean isStatic(){return isStatic;}
-	public boolean hasCollider(){return collider != null;}
+	public boolean hasCollider(){return collider != null && collider.enabled;}
 	public void translateX(float by){positionX += by;}
 	public void translateY(float by){positionY += by;}
 	public void translate(Vector2 by){

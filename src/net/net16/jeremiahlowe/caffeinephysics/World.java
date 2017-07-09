@@ -3,6 +3,7 @@ package net.net16.jeremiahlowe.caffeinephysics;
 import java.util.ArrayList;
 
 import net.net16.jeremiahlowe.bettercollections.vector.Vector2;
+import net.net16.jeremiahlowe.caffeinephysics.collider.Collider;
 
 public class World {
 	private float width, height;
@@ -50,11 +51,23 @@ public class World {
 		float chgVY = interpolateVelocityChange(velY, timeDifferential);
 		float nPosX = to.getPositionX() + chgVX;
 		float nPosY = to.getPositionY() + chgVY;
-		Body cb = getCollisionBodyAt(nPosX, nPosY);
-		if(cb != null){
-			System.out.println(to + " collided with " + cb);
-			if(cb.isStatic()) return;
-			else return;
+		if(to.hasCollider()){
+			Collider c = to.getCollider();
+			Vector2 closest = null;
+			float closestDist = Float.MAX_VALUE;
+			for(Vector2 v : c.getVerticiesNonParented()){
+				float dist = (float) Vector2.distance2(new Vector2(nPosX, nPosY), Vector2.add(v, to.getPosition()));
+				if(dist < closestDist){
+					closestDist = dist;
+					closest = v;
+				}
+			}
+			float offX = closest.x, offY = closest.y;
+			Body cb = getCollisionBodyAt(nPosX + offX, nPosY + offY);
+			if(cb != null){
+				if(cb.isStatic()) return;
+				else return;
+			}
 		}
 		to.setPosition(nPosX, nPosY);
 	}
@@ -73,9 +86,11 @@ public class World {
 		return (unitsPerSecond * time) / 1000;
 	}
 	public Body getCollisionBodyAt(float x, float y){
-		for(Body b : bodies)
-			if(b.hasCollider() && b.getCollider().pointLiesIn(b, x, y))
+		for(Body b : bodies){
+			if(b.hasCollider() && b.getCollider().pointLiesIn(b, x, y)){
 				return b; 
+			}
+		}
 		return null;
 	}
 	public Body getBodyAt(float x, float y){

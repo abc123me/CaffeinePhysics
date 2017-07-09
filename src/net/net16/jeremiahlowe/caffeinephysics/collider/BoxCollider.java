@@ -26,10 +26,9 @@ public class BoxCollider extends Collider{
 	}
 	@Override
 	public boolean pointLiesIn(Body b, float x, float y) {
-		float minX = width / 2 - b.getPositionX(), maxX = width / 2 + b.getPositionX();
-		float minY = height / 2 - b.getPositionY(), maxY = height / 2 + b.getPositionY();
-		System.out.println();
-		return Utility.inRange(x, minX, maxX) && Utility.inRange(y, minY, maxY);
+		float minX = b.getPositionX() - width / 2, maxX = width / 2 + b.getPositionX();
+		float minY = b.getPositionY() - height / 2, maxY = height / 2 + b.getPositionY();
+		return Utility.betweenOrEqual(x, minX, maxX) && Utility.betweenOrEqual(y, minY, maxY);
 	}
 	@Override
 	public Vector2[] getVerticies(Body b) {
@@ -59,5 +58,16 @@ public class BoxCollider extends Collider{
 				new Vector2(c, d), 
 				new Vector2(a, d)
 		};                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+	}
+	@Override
+	public Vector2[] getVerticiesOffsetted(float x, float y) {
+		Vector2[] nv = new Vector2[verticies.length];
+		if(nv.length != 4) setSize(width, height);
+		for(int i = 0; i < nv.length; i++){
+			nv[i] = new Vector2();
+			nv[i].x = verticies[i].x + x;
+			nv[i].y = verticies[i].y + y;
+		}
+		return nv;
 	}
 }
