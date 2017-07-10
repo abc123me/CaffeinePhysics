@@ -1,6 +1,7 @@
-package net.net16.jeremiahlowe.caffeinephysics;
+package net.net16.jeremiahlowe.caffeinephysics.util;
 
 import net.net16.jeremiahlowe.bettercollections.vector.Vector2;
+import net.net16.jeremiahlowe.caffeinephysics.Body;
 
 public class RaycastHit {
 	private final Body bodyHit;

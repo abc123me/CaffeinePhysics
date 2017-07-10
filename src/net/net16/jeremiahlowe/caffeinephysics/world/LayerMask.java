@@ -1,6 +1,4 @@
-package net.net16.jeremiahlowe.caffeinephysics;
-
-import net.net16.jeremiahlowe.caffeinephysics.collider.Collider;
+package net.net16.jeremiahlowe.caffeinephysics.world;
 
 public class LayerMask {
 	private boolean[] layers;

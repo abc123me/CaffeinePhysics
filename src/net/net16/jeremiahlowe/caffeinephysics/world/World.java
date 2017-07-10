@@ -1,11 +1,14 @@
-package net.net16.jeremiahlowe.caffeinephysics;
+package net.net16.jeremiahlowe.caffeinephysics.world;
 
 import java.util.ArrayList;
 
 import net.net16.jeremiahlowe.bettercollections.vector.Vector2;
+import net.net16.jeremiahlowe.caffeinephysics.Body;
 import net.net16.jeremiahlowe.caffeinephysics.collider.Collider;
+import net.net16.jeremiahlowe.caffeinephysics.util.Utility;
 
 public class World {
+	private float maxVelocityX, maxVelocityY;
 	private float width, height;
 	private boolean hasFixedSize;
 	private float gravityVelocityX;
@@ -34,14 +37,23 @@ public class World {
 	
 	public void update(){
 		timeDifferential = System.currentTimeMillis() - lastUpdateTime;
-		applyVelocities();
+		applyChanges();
 		lastUpdateTime = System.currentTimeMillis();
 	}
-	private void applyVelocities(){
+	private void applyChanges(){
 		for(Body b : bodies){
+			checkAndFixPosition(b);
 			if(b.isStatic()) continue;
-			applyGravity(b);
+			if(!b.ignoreGravity) correctVelocities(b);
 			applyVelocity(b);
+		}
+	}
+	private void checkAndFixPosition(Body b){
+		if(hasFixedSize){
+			if(b.getPositionX() > width) b.setPosition(width, b.getPositionY());
+			if(b.getPositionX() < -width) b.setPosition(-width, b.getPositionY());
+			if(b.getPositionY() > height) b.setPosition(b.getPositionX(), height);
+			if(b.getPositionY() < -height) b.setPosition(b.getPositionX(), -height);
 		}
 	}
 	private void applyVelocity(Body to){
@@ -66,15 +78,22 @@ public class World {
 			Body cb = getCollisionBodyAt(nPosX + offX, nPosY + offY);
 			if(cb != null){
 				if(cb.isStatic()) return;
-				else return;
+				else{
+					cb.setVelocityFromMomentum(to.getMomentum());
+					return;
+				}
 			}
 		}
 		to.setPosition(nPosX, nPosY);
 	}
 	
-	private void applyGravity(Body b){
+	private void correctVelocities(Body b){
 		float vx = b.getVelocityX(), vy = b.getVelocityY();
-		vy = gravityVelocityY;
+		//First, lets apply gravity (slighty long condition ahead!)
+		if(!(vx == gravityVelocityX || ((gravityVelocityX > 0) ? (vx > gravityVelocityX) : (vx < gravityVelocityX)))) 
+			vx += interpolateVelocityChange(gravityVelocityX, timeDifferential);
+		if(!(vy == gravityVelocityY || ((gravityVelocityY > 0) ? (vy > gravityVelocityY) : (vy < gravityVelocityY)))) 
+			vy += interpolateVelocityChange(gravityVelocityY, timeDifferential);
 		b.setVelocity(vx, vy);
 	}
 	public float interpolateVelocityChange(float unitsPerSecond, long time){
@@ -164,6 +183,13 @@ public class World {
 	public float getGravityVelocityX(){return gravityVelocityX;}
 	public float getGravityVelocityY(){return gravityVelocityY;}
 	public long getLastTimeDifferential(){return timeDifferential;}
+	public void setMaxVelocity(float maxX, float maxY){
+		maxVelocityX = maxX;
+		maxVelocityY = maxY;
+	}
+	public void setMaxVelocity(Vector2 max){setMaxVelocity(max.x, max.y);}
+	public float getMaxVelocityX(){return maxVelocityX;}
+	public float getMaxVelocityY(){return maxVelocityY;}
 	
 	@Override
 	public String toString(){
