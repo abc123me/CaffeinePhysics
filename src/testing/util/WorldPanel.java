@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Polygon;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
@@ -12,8 +14,8 @@ import javax.swing.JPanel;
 
 import net.net16.jeremiahlowe.bettercollections.vector.Vector2;
 import net.net16.jeremiahlowe.caffeinephysics.Body;
-import net.net16.jeremiahlowe.caffeinephysics.Utility;
-import net.net16.jeremiahlowe.caffeinephysics.World;
+import net.net16.jeremiahlowe.caffeinephysics.util.Utility;
+import net.net16.jeremiahlowe.caffeinephysics.world.World;
 
 public class WorldPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
@@ -21,21 +23,54 @@ public class WorldPanel extends JPanel{
 	public Color colliderColor = Color.CYAN;
 	public Color boundingBoxColor = new Color(255, 200, 0, 125);
 	public int xSize = 5;
-	private World world = null;
+	private final World world;
 	private float viewW = 10, viewH = 10;
 	public float viewportPosX = 0, viewportPosY = 0;
 	
 	public WorldPanel(World world){
+		if(world == null) throw new NullPointerException("World is null!");
+		this.world = world;
 		if(world.hasFixedSize()) init(world, world.getFixedWidth(), world.getFixedHeight());
 		else init(world, 10, 10);
 	}
-	public WorldPanel(World world, float viewportW, float viewportH){init(world, viewportW, viewportH);}
+	public WorldPanel(World world, float viewportW, float viewportH){
+		if(world == null) throw new NullPointerException("World is null!");
+		this.world = world;
+		init(world, viewportW, viewportH);
+	}
 	private void init(World world, float viewportW, float viewportH){
 		setBackground(Color.WHITE);
 		setViewportSize(viewportW, viewportH);
-		setWorld(world);
 		setFocusable(true);
 		requestFocus();
+		addControlListeners();
+	}
+	public void addControlListeners(){
+		MouseAdapter selector = new MouseAdapter() {
+			private Body selection = null;
+			private Vector2 velocity;
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				if(selection != null){
+					float worldX = pixelXToWorldX(e.getX()), worldY = pixelYToWorldY(e.getY());
+					selection.setPosition(worldX, worldY);
+					if(!selection.isStatic()) selection.setVelocity(Vector2.ZERO);
+				}
+			}
+			@Override
+			public void mousePressed(MouseEvent e) {
+				float worldX = pixelXToWorldX(e.getX()), worldY = pixelYToWorldY(e.getY());
+				selection = world.getCollisionBodyAt(worldX, worldY);
+				if(selection != null && !selection.isStatic()) velocity = selection.getVelocity();
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if(selection != null && !selection.isStatic()) selection.setVelocity(velocity);
+				selection = null;
+			}
+		};
+		addMouseMotionListener(selector);
+		addMouseListener(selector);
 		addKeyListener(new KeyAdapter(){
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -118,23 +153,25 @@ public class WorldPanel extends JPanel{
 		}
 	}
 	
-	private int worldToPixelX(float x){
+	public float pixelXToWorldX(int x){
+		return Utility.map(x, 0, getWidth(), viewW / -2, viewW / 2) + viewportPosX;
+	}
+	public float pixelYToWorldY(int y){
+		return Utility.map(y, getHeight(), 0, viewH / -2, viewH / 2) + viewportPosY;
+	}
+	public int worldToPixelX(float x){
 		return Math.round(Utility.map(x + viewportPosX, viewW / -2, viewW / 2, 0, getWidth()));
 	}
-	private int worldToPixelY(float y){
+	public int worldToPixelY(float y){
 		return Math.round(Utility.map(y + viewportPosY, viewH / -2, viewH / 2, getHeight(), 0));
 	}
-	private int worldToPixelW(float x){
+	public int worldToPixelW(float x){
 		return Math.round(Utility.map(x, 0, viewW, 0, getWidth()));
 	}
-	private int worldToPixelH(float y){
+	public int worldToPixelH(float y){
 		return Math.round(Utility.map(y, 0, viewH, 0, getHeight()));
 	}
 	
-	public void setWorld(World world){
-		if(world == null) throw new NullPointerException("World is null!");
-		this.world = world;
-	}
 	public void setViewportSize(float width, float height){
 		setViewportWidth(width);
 		setViewportHeight(height);

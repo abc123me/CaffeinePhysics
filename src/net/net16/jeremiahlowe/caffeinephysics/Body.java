@@ -2,6 +2,7 @@ package net.net16.jeremiahlowe.caffeinephysics;
 
 import net.net16.jeremiahlowe.bettercollections.vector.Vector2;
 import net.net16.jeremiahlowe.caffeinephysics.collider.Collider;
+import net.net16.jeremiahlowe.caffeinephysics.util.Utility;
 
 public class Body {
 	private boolean isStatic = false;
@@ -9,6 +10,7 @@ public class Body {
 	private float velocityX, velocityY;
 	private float mass;
 	private Collider collider;
+	public boolean ignoreGravity = false;
 	
 	public Body(){this(null);}
 	public Body(Collider c){this(c, 0, 0);}
@@ -30,6 +32,7 @@ public class Body {
 		velocityX = x;
 		velocityY = y;
 	}
+	public void setVelocity(Vector2 velocity) {setVelocity(velocity.x, velocity.y);}
 	public void setMass(float mass){this.mass = mass;}
 	public void setCollider(Collider collider){this.collider = collider;}
 	public float getMass(){return mass;}

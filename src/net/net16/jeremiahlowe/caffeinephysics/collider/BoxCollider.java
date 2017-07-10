@@ -2,7 +2,7 @@ package net.net16.jeremiahlowe.caffeinephysics.collider;
 
 import net.net16.jeremiahlowe.bettercollections.vector.Vector2;
 import net.net16.jeremiahlowe.caffeinephysics.Body;
-import net.net16.jeremiahlowe.caffeinephysics.Utility;
+import net.net16.jeremiahlowe.caffeinephysics.util.Utility;
 
 public class BoxCollider extends Collider{
 	private Vector2[] verticies;
